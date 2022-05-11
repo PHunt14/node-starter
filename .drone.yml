@@ -1,0 +1,50 @@
+kind: pipeline
+type: kubernetes
+name: test
+
+# trigger
+# code checkout
+steps:
+
+- name: english
+  image: alpine
+  commands:
+  - echo hello world
+
+# compile the code
+- name: build and push the Dockerfile
+  image: plugins/docker
+  when:
+    branch:
+      - master
+  settings:
+    username:
+      from_secret: docker_username
+    password:
+      from_secret: docker_password
+    repo: autkast/node-starter
+    tags:
+    - sha-${DRONE_COMMIT_SHA}
+# - name: compile
+#   image: node
+#   commands:
+#     - npm install
+#     - node app.js
+
+# run unit tests
+# package the code
+- name: build and push the Dockerfile
+  image: plugins/docker
+  when:
+    branch:
+      - master
+  settings:
+    username:
+      from_secret: docker_username
+    password:
+      from_secret: docker_password
+    repo: autkast/node-starter
+    tags:
+    - latest
+# run acceptance tests
+# delivery/deployment
